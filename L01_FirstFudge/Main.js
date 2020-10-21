@@ -33,7 +33,7 @@ var L01_FirstFudge;
                 cmpBall.pivot.translateZ(-100);
                 cmpBall.pivot.rotateX(90); */
         //UP & DOWN (Y from -34 to 34)
-        //   cmpBall.pivot.translateY(-34);
+        //   cmpBall.pivot.translateY(0);
         //LEFT & RIGHT(X from -69 to 69)
         //    cmpBall.pivot.translateX(-69);
         ball.addComponent(cmpBall);
@@ -82,10 +82,11 @@ var L01_FirstFudge;
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 30);
     }
     function hndLoop(_event) {
-        console.log("Tick");
+        // console.log("Tick");
         // root.mtxLocal.rotateZ(0);
         if (trackZ > 0 && trackZ <= 68) {
             cmpBall.pivot.translateZ(1);
+            //cmpBall.pivot.translateX(1);
             trackZ++;
             if (trackZ > 68) {
                 trackZ = -1;
@@ -93,6 +94,7 @@ var L01_FirstFudge;
         }
         else if (trackZ < 0 && trackZ >= -68) {
             cmpBall.pivot.translateZ(-1);
+            //cmpBall.pivot.translateX(-1);
             trackZ--;
             if (trackZ < -68) {
                 trackZ = 1;

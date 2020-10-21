@@ -14,7 +14,7 @@ namespace L01_FirstFudge {
     cmpBall.pivot.rotateX(90);
 
 
-    let trackZ = 35;
+    let trackZ: number = 35;
 
 
     function hndLoad(_event: Event): void {
@@ -46,7 +46,7 @@ namespace L01_FirstFudge {
                 cmpBall.pivot.rotateX(90); */
 
         //UP & DOWN (Y from -34 to 34)
-        //   cmpBall.pivot.translateY(-34);
+        //   cmpBall.pivot.translateY(0);
 
         //LEFT & RIGHT(X from -69 to 69)
         //    cmpBall.pivot.translateX(-69);
@@ -109,17 +109,19 @@ namespace L01_FirstFudge {
     }
 
     function hndLoop(_event: Event): void {
-        console.log("Tick");
+        // console.log("Tick");
         // root.mtxLocal.rotateZ(0);
 
         if (trackZ > 0 && trackZ <= 68) {
             cmpBall.pivot.translateZ(1);
+            //cmpBall.pivot.translateX(1);
             trackZ++;
             if (trackZ > 68) {
                 trackZ = -1;
             }
         } else if (trackZ < 0 && trackZ >= -68) {
             cmpBall.pivot.translateZ(-1);
+            //cmpBall.pivot.translateX(-1);
             trackZ--;
             if (trackZ < -68) {
                 trackZ = 1;

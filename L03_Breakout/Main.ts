@@ -62,14 +62,11 @@ namespace L03_Breakout {
 
         for (let row: number = 1; row < 6; row++) {
             for (let col: number = 1; col < 38; col += 4) {
-
                 if (row > 2) {
                     obstacle[row + col] = createNode("Obstacle" + row + col, meshQuad, mtrDarkOrange, new fc.Vector2(-19 + col, 14 - row), new fc.Vector2(3, 0.5));
                 } else {
                     obstacle[row + col] = createNode("Obstacle" + row + col, meshQuad, mtrRed, new fc.Vector2(-19 + col, 14 - row), new fc.Vector2(3, 0.5));
                 }
-
-
                 root.appendChild(obstacle[row + col]);
             }
         }
@@ -97,7 +94,7 @@ namespace L03_Breakout {
 
     function hndLoop(_event: Event): void {
 
-        // Input
+        // check for Input
 
         if (keysPressed[fc.KEYBOARD_CODE.ARROW_LEFT])
             paddle.cmpTransform.local.translate(new fc.Vector3(-0.8));

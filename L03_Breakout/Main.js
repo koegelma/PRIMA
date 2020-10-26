@@ -66,7 +66,7 @@ var L03_Breakout;
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
     }
     function hndLoop(_event) {
-        // Input
+        // check for Input
         if (keysPressed[fc.KEYBOARD_CODE.ARROW_LEFT])
             paddle.cmpTransform.local.translate(new fc.Vector3(-0.8));
         if (keysPressed[fc.KEYBOARD_CODE.ARROW_RIGHT])

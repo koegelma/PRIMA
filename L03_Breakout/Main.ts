@@ -84,6 +84,8 @@ namespace L03_Breakout {
 
     function hndLoop(_event: Event): void {
 
+        // Input
+
         if (keysPressed[fc.KEYBOARD_CODE.ARROW_LEFT])
             paddle.cmpTransform.local.translate(new fc.Vector3(-0.5));
         if (keysPressed[fc.KEYBOARD_CODE.ARROW_RIGHT])
@@ -92,9 +94,13 @@ namespace L03_Breakout {
         /*         console.log("X: " + velocity.x);
                 console.log("Y: " + velocity.y); */
 
+        // Ball Movement
+
         let frameTime: number = fc.Time.game.getElapsedSincePreviousCall() / 500;
         let move: fc.Vector3 = fc.Vector3.SCALE(velocity, frameTime);
         ball.mtxLocal.translate(move);
+
+        // Detect Collision
 
         let hit: boolean = false;
         for (let node of root.getChildren()) {

@@ -321,6 +321,7 @@ declare namespace FudgeCore {
          * @param _path
          */
         static reconstruct(_path: string): Serializable;
+        static getConstructor<T extends Serializable>(_type: string, _namespace?: Object): new () => T;
         /**
          * Returns the full path to the class of the object, if found in the registered namespaces
          * @param _object
@@ -624,7 +625,18 @@ declare namespace FudgeCore {
          * @param _point
          */
         isInside(_point: Vector2): boolean;
+        /**
+         * Returns true if this rectangle collides with the rectangle given
+         * @param _rect
+         */
         collides(_rect: Rectangle): boolean;
+        /**
+         * Returns the rectangle created by the intersection of this and the given rectangle or null, if they don't collide
+         */
+        getIntersection(_rect: Rectangle): Rectangle;
+        /**
+         * Creates a string representation of this rectangle
+         */
         toString(): string;
         protected reduceMutator(_mutator: Mutator): void;
     }
@@ -786,6 +798,10 @@ declare namespace FudgeCore {
          * @param _child The node to be removed.
          */
         removeChild(_child: Node): void;
+        /**
+         * Removes all references in the list of children
+         */
+        removeAllChildren(): void;
         /**
          * Returns the position of the node in the list of children or -1 if not found
          * @param _search The node to be found.
@@ -1207,7 +1223,7 @@ declare namespace FudgeCore {
         /**
          * Set the [[ComponentAudioListener]] that serves the spatial location and orientation for this contexts listener
          */
-        listen: (_cmpListener: ComponentAudioListener | null) => void;
+        listenWith: (_cmpListener: ComponentAudioListener | null) => void;
         /**
          * Updates the spatial settings of the AudioNodes effected in the current FUDGE-graph
          */
@@ -1255,7 +1271,7 @@ declare namespace FudgeCore {
      */
     class CoatTextured extends CoatColored {
         texture: TextureImage;
-        constructor(_color?: Color);
+        constructor(_color?: Color, _texture?: TextureImage);
         serialize(): Serialization;
         deserialize(_serialization: Serialization): Promise<Serializable>;
     }
@@ -1536,6 +1552,8 @@ declare namespace FudgeCore {
         private fieldOfView;
         private aspectRatio;
         private direction;
+        private near;
+        private far;
         private backgroundEnabled;
         /**
          * Returns the multiplikation of the worldtransformation of the camera container with the projection matrix
@@ -1547,13 +1565,15 @@ declare namespace FudgeCore {
         getAspect(): number;
         getFieldOfView(): number;
         getDirection(): FIELD_OF_VIEW;
+        getNear(): number;
+        getFar(): number;
         /**
          * Set the camera to perspective projection. The world origin is in the center of the canvaselement.
          * @param _aspect The aspect ratio between width and height of projectionspace.(Default = canvas.clientWidth / canvas.ClientHeight)
          * @param _fieldOfView The field of view in Degrees. (Default = 45)
          * @param _direction The plane on which the fieldOfView-Angle is given
          */
-        projectCentral(_aspect?: number, _fieldOfView?: number, _direction?: FIELD_OF_VIEW): void;
+        projectCentral(_aspect?: number, _fieldOfView?: number, _direction?: FIELD_OF_VIEW, _near?: number, _far?: number): void;
         /**
          * Set the camera to orthographic projection. The origin is in the top left corner of the canvas.
          * @param _left The positionvalue of the projectionspace's left border. (Default = 0)
@@ -1575,6 +1595,63 @@ declare namespace FudgeCore {
     }
 }
 declare namespace FudgeCore {
+    type TypeOfLight = new () => Light;
+    /**
+     * Baseclass for different kinds of lights.
+     * @authors Jirka Dell'Oro-Friedl, HFU, 2019
+     */
+    abstract class Light extends Mutable implements Serializable {
+        color: Color;
+        constructor(_color?: Color);
+        getType(): TypeOfLight;
+        serialize(): Serialization;
+        deserialize(_serialization: Serialization): Promise<Serializable>;
+        protected reduceMutator(): void;
+    }
+    /**
+     * Ambient light, coming from all directions, illuminating everything with its color independent of position and orientation (like a foggy day or in the shades)
+     * ```plaintext
+     * ~ ~ ~
+     *  ~ ~ ~
+     * ```
+     */
+    class LightAmbient extends Light {
+        constructor(_color?: Color);
+    }
+    /**
+     * Directional light, illuminating everything from a specified direction with its color (like standing in bright sunlight)
+     * ```plaintext
+     * --->
+     * --->
+     * --->
+     * ```
+     */
+    class LightDirectional extends Light {
+        constructor(_color?: Color);
+    }
+    /**
+     * Omnidirectional light emitting from its position, illuminating objects depending on their position and distance with its color (like a colored light bulb)
+     * ```plaintext
+     *         .\|/.
+     *        -- o --
+     *         ´/|\`
+     * ```
+     */
+    class LightPoint extends Light {
+        range: number;
+    }
+    /**
+     * Spot light emitting within a specified angle from its position, illuminating objects depending on their position and distance with its color
+     * ```plaintext
+     *          o
+     *         /|\
+     *        / | \
+     * ```
+     */
+    class LightSpot extends Light {
+    }
+}
+declare namespace FudgeCore {
     /**
      * Attaches a [[Light]] to the node
      * @authors Jirka Dell'Oro-Friedl, HFU, 2019
@@ -1582,6 +1659,12 @@ declare namespace FudgeCore {
     /**
      * Defines identifiers for the various types of light this component can provide.
      */
+    enum LIGHT_TYPE {
+        AMBIENT = "LightAmbient",
+        DIRECTIONAL = "LightDirectional",
+        POINT = "LightPoint",
+        SPOT = "LightSpot"
+    }
     class ComponentLight extends Component {
         static readonly iSubclass: number;
         pivot: Matrix4x4;
@@ -1591,6 +1674,8 @@ declare namespace FudgeCore {
         serialize(): Serialization;
         deserialize(_serialization: Serialization): Promise<Serializable>;
         getMutator(): Mutator;
+        getMutatorAttributeTypes(_mutator: Mutator): MutatorAttributeTypes;
+        mutate(_mutator: Mutator): Promise<void>;
     }
 }
 declare namespace FudgeCore {
@@ -1724,6 +1809,7 @@ declare namespace FudgeCore {
          * Feed an input value into this control and fire the events [[EVENT_CONTROL.INPUT]] and [[EVENT_CONTROL.OUTPUT]]
          */
         setInput(_input: number): void;
+        pulse(_input: number): void;
         /**
          * Set the time to take for the internal linear dampening until the final ouput value is reached
          */
@@ -1957,6 +2043,7 @@ declare namespace FudgeCore {
         static register(_resource: SerializableResource, _idResource?: string): void;
         static deregister(_resource: SerializableResource): void;
         static clear(): void;
+        static getResourcesOfType<T>(_type: new (_args: General) => T): Resources;
         /**
          * Generate a user readable and unique id using the type of the resource, the date and random numbers
          * @param _resource
@@ -1981,7 +2068,8 @@ declare namespace FudgeCore {
         static registerScriptNamespace(_namespace: Object): void;
         static getComponentScripts(): ComponentScripts;
         static loadScript(_url: RequestInfo): Promise<void>;
-        static loadResources(_url?: RequestInfo): Promise<Resources>;
+        static loadResources(_url: RequestInfo): Promise<Resources>;
+        static loadResourcesFromHTML(): Promise<void>;
         /**
          * Serialize all resources
          */
@@ -2446,63 +2534,6 @@ declare namespace FudgeCore {
          * Set this node to be a recreation of the [[Graph]] given
          */
         set(_graph: Graph): Promise<void>;
-    }
-}
-declare namespace FudgeCore {
-    type TypeOfLight = new () => Light;
-    /**
-     * Baseclass for different kinds of lights.
-     * @authors Jirka Dell'Oro-Friedl, HFU, 2019
-     */
-    abstract class Light extends Mutable implements Serializable {
-        color: Color;
-        constructor(_color?: Color);
-        getType(): TypeOfLight;
-        serialize(): Serialization;
-        deserialize(_serialization: Serialization): Promise<Serializable>;
-        protected reduceMutator(): void;
-    }
-    /**
-     * Ambient light, coming from all directions, illuminating everything with its color independent of position and orientation (like a foggy day or in the shades)
-     * ```plaintext
-     * ~ ~ ~
-     *  ~ ~ ~
-     * ```
-     */
-    class LightAmbient extends Light {
-        constructor(_color?: Color);
-    }
-    /**
-     * Directional light, illuminating everything from a specified direction with its color (like standing in bright sunlight)
-     * ```plaintext
-     * --->
-     * --->
-     * --->
-     * ```
-     */
-    class LightDirectional extends Light {
-        constructor(_color?: Color);
-    }
-    /**
-     * Omnidirectional light emitting from its position, illuminating objects depending on their position and distance with its color (like a colored light bulb)
-     * ```plaintext
-     *         .\|/.
-     *        -- o --
-     *         ´/|\`
-     * ```
-     */
-    class LightPoint extends Light {
-        range: number;
-    }
-    /**
-     * Spot light emitting within a specified angle from its position, illuminating objects depending on their position and distance with its color
-     * ```plaintext
-     *          o
-     *         /|\
-     *        / | \
-     * ```
-     */
-    class LightSpot extends Light {
     }
 }
 declare namespace FudgeCore {
@@ -3323,6 +3354,10 @@ declare namespace FudgeCore {
          * must be relative to the same coordinate system, preferably the world
          */
         intersectPlane(_origin: Vector3, _normal: Vector3): Vector3;
+        /**
+         * Returns the shortest distance from the ray to the given target point.
+         * All values and calculations must be relative to the same coordinate system, preferably the world.
+         */
         getDistance(_target: Vector3): Vector3;
     }
 }

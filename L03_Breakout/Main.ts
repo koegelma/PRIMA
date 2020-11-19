@@ -7,14 +7,16 @@ namespace L03_Breakout {
     import fc = FudgeCore;
 
     window.addEventListener("load", hndLoad);
-    let ball: fc.Node;
+
     let velocity: fc.Vector3 = new fc.Vector3(fc.Random.default.getRange(-0.5, 0.5), fc.Random.default.getRange(-0.5, 0), 0);
     //let velocity: fc.Vector3 = new fc.Vector3(10, -10, 0);
     let speed: number = 18;
     velocity.normalize(speed);
+
+    let ball: fc.Node;
     let paddle: fc.Node;
     let keysPressed: KeyPressed = {};
-    let obstacle: fc.Node[] = new Array(100);
+    let obstacle: fc.Node[] = new Array(50);
 
     export let viewport: fc.Viewport;
     let root: fc.Node;

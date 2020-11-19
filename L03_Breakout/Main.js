@@ -3,14 +3,14 @@ var L03_Breakout;
 (function (L03_Breakout) {
     var fc = FudgeCore;
     window.addEventListener("load", hndLoad);
-    let ball;
     let velocity = new fc.Vector3(fc.Random.default.getRange(-0.5, 0.5), fc.Random.default.getRange(-0.5, 0), 0);
     //let velocity: fc.Vector3 = new fc.Vector3(10, -10, 0);
     let speed = 18;
     velocity.normalize(speed);
+    let ball;
     let paddle;
     let keysPressed = {};
-    let obstacle = new Array(100);
+    let obstacle = new Array(50);
     let root;
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");

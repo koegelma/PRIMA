@@ -40,13 +40,13 @@ namespace L11_Doom_Enemy {
     walls = createWalls();
     root.appendChild(walls);
 
-
     let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
     let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
     //let enemy: fc.Node = new fc.Node("Enemy");
     //enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
     //enemy = createEnemy();
-    enemy = new Enemy("Enemy", fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy);
+
+    enemy = new Enemy("Enemy", fc.Vector2.ONE(4), new fc.Vector3(8, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
     root.appendChild(enemy);
 
     cmpCamera.projectCentral(1, 45, fc.FIELD_OF_VIEW.DIAGONAL, 0.2, 10000);
@@ -80,7 +80,7 @@ namespace L11_Doom_Enemy {
       + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
     );
 
-    enemy.rotateEnemy(avatar.mtxLocal.translation);
+    enemy.moveEnemy(avatar.mtxLocal.translation);
 
     moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
     ctrRotation.setInput(0);
@@ -101,7 +101,7 @@ namespace L11_Doom_Enemy {
     let speedZ: number = _translationZ * 0.3;
     avatar.mtxLocal.translateZ(speedZ);
 
-    let speedX: number = _translationX * 0.15;
+    let speedX: number = _translationX * 0.2;
     avatar.mtxLocal.translateX(speedX);
 
     let bouncedOff: Wall[] = bounceOffWalls(<Wall[]>walls.getChildren());
@@ -138,8 +138,6 @@ namespace L11_Doom_Enemy {
 
     walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.Y(sizeWall / 2), fc.Vector3.ZERO(), mtrWall));
     walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.Y(sizeWall / 2), fc.Vector3.Y(180), mtrWall));
-    /*  walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(0.5, 1, -0.866), sizeWall / 2), fc.Vector3.Y(120), mtrWall));
-     walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-0.5, 1, -0.866), sizeWall / 2), fc.Vector3.Y(-120), mtrWall)); */
 
     for (let i: number = -numWalls / 2 + 0.5; i < numWalls / 2; i++) {
       walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-numWalls / 2, 0.5, i), sizeWall), fc.Vector3.Y(90), mtrWall));
@@ -162,10 +160,6 @@ namespace L11_Doom_Enemy {
   
       let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
       let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
-  
-      //let rotation: fc.ComponentTransform = new fc.ComponentTransform();
-      //enemy.addComponent(rotation);
-      //enemy.addComponent(new fc.ComponentTransform());
   
       enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
   

@@ -1,8 +1,8 @@
 "use strict";
-var L10_Doom_Mouse;
-(function (L10_Doom_Mouse) {
+var L11_Doom_Enemy;
+(function (L11_Doom_Enemy) {
     var fc = FudgeCore;
-    class Wall extends L10_Doom_Mouse.GameObject {
+    class Wall extends L11_Doom_Enemy.GameObject {
         // private static readonly meshQuad: ƒ.MeshQuad = new ƒ.MeshQuad();
         constructor(_size, _position, _rotation, _material) {
             super("Wall", _size, _position, _rotation);
@@ -12,6 +12,6 @@ var L10_Doom_Mouse;
             this.addComponent(cmpMaterial);
         }
     }
-    L10_Doom_Mouse.Wall = Wall;
-})(L10_Doom_Mouse || (L10_Doom_Mouse = {}));
+    L11_Doom_Enemy.Wall = Wall;
+})(L11_Doom_Enemy || (L11_Doom_Enemy = {}));
 //# sourceMappingURL=Wall.js.map

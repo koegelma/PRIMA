@@ -1,4 +1,4 @@
-namespace L10_Doom_Mouse {
+namespace L11_Doom_Enemy {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
@@ -7,10 +7,15 @@ namespace L10_Doom_Mouse {
   const sizeWall: number = 3;
   const numWalls: number = 20;
 
+  const sizeEnemies: number = 2;
+
   export let viewport: fc.Viewport;
   let root: fc.Node = new fc.Node("Root");
   let avatar: fc.Node = new fc.Node("Avatar");
   let walls: fc.Node;
+  let enemy: Enemy;
+
+  let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
 
   let ctrSpeed: fc.Control = new fc.Control("AvatarSpeed", 0.5, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrSpeed.setDelay(100);
@@ -18,8 +23,6 @@ namespace L10_Doom_Mouse {
   ctrDirection.setDelay(100);
   let ctrRotation: fc.Control = new fc.Control("AvatarRotation", -0.1, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrRotation.setDelay(50);
-
-
 
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
@@ -37,21 +40,18 @@ namespace L10_Doom_Mouse {
     walls = createWalls();
     root.appendChild(walls);
 
-    let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtFloor));
-    let enemy: fcaid.Node = new fcaid.Node("Enemy", fc.Matrix4x4.ROTATION_X(-90), mtrFloor, meshQuad);
-    enemy.mtxLocal.scale(fc.Vector3.ONE(sizeWall * numWalls));
-    enemy.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(numWalls));
 
-    enemy.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.Y(10), fc.Vector3.ZERO(), mtrEnemy));
-
+    let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
+    let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
+    //let enemy: fc.Node = new fc.Node("Enemy");
+    //enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
+    //enemy = createEnemy();
+    enemy = new Enemy("Enemy", fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy);
     root.appendChild(enemy);
 
-
-
-    let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
     cmpCamera.projectCentral(1, 45, fc.FIELD_OF_VIEW.DIAGONAL, 0.2, 10000);
     cmpCamera.pivot.translate(fc.Vector3.Y(1.7));
-    cmpCamera.backgroundColor = fc.Color.CSS("darkblue");
+    cmpCamera.backgroundColor = fc.Color.CSS("black");
 
     avatar.addComponent(cmpCamera);
     avatar.addComponent(new fc.ComponentTransform());
@@ -80,19 +80,21 @@ namespace L10_Doom_Mouse {
       + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
     );
 
+    enemy.rotateEnemy(avatar.mtxLocal.translation);
+
     moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
+    ctrRotation.setInput(0);
 
     viewport.draw();
   }
 
   function hndMouse(_event: MouseEvent): void {
-    // console.log(_event.movementX, _event.movementY);
     ctrRotation.setInput(_event.movementX);
   }
 
   function moveAvatar(_translationZ: number, _translationX: number, _rotation: number): void {
 
-    let speedRotation: number = _rotation * 0.35;
+    let speedRotation: number = _rotation * 0.6;
     avatar.mtxLocal.rotateY(speedRotation);
     let posOld: fc.Vector3 = avatar.mtxLocal.translation;
 
@@ -154,4 +156,20 @@ namespace L10_Doom_Mouse {
 
     return walls;
   }
+
+  /*   function createEnemy(): fc.Node {
+      let enemy: fc.Node = new fc.Node("Enemy");
+  
+      let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
+      let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
+  
+      //let rotation: fc.ComponentTransform = new fc.ComponentTransform();
+      //enemy.addComponent(rotation);
+      //enemy.addComponent(new fc.ComponentTransform());
+  
+      enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
+  
+      return enemy;
+    } */
+
 }

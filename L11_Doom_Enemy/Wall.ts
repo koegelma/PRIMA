@@ -1,4 +1,4 @@
-namespace L10_Doom_Mouse {
+namespace L11_Doom_Enemy {
   import fc = FudgeCore;
 
   export class Wall extends GameObject {

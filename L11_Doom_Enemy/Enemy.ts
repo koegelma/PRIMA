@@ -17,20 +17,20 @@ namespace L11_Doom_Enemy {
 
     public moveEnemy(_avatarTranslation: fc.Vector3): void {
 
-      this.rotateEnemy(_avatarTranslation);
+      //this.rotateEnemy(_avatarTranslation);
 
       let normal: fc.Vector3 = this.mtxWorld.getZ();
       let posThis: fc.Vector3 = this.mtxWorld.translation;
       let difference: fc.Vector3 = fc.Vector3.DIFFERENCE(_avatarTranslation, posThis);
       let distance: number = fc.Vector3.DOT(difference, normal);
 
-      if (distance < 3) {
+      if (distance < 3 || distance > 25) {
         this.mtxLocal.translateZ(0);
       }
       else {
         this.mtxLocal.translateZ(0.06);
       }
     }
-    
+
   }
 }

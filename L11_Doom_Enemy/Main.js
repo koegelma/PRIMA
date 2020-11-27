@@ -11,6 +11,7 @@ var L11_Doom_Enemy;
     let avatar = new fc.Node("Avatar");
     let walls;
     let enemy;
+    let enemy2;
     let cmpCamera = new fc.ComponentCamera();
     let ctrSpeed = new fc.Control("AvatarSpeed", 0.5, 0 /* PROPORTIONAL */);
     ctrSpeed.setDelay(100);
@@ -31,11 +32,10 @@ var L11_Doom_Enemy;
         root.appendChild(walls);
         let txtEnemy = new fc.TextureImage("../DoomAssets/Annihilator.png");
         let mtrEnemy = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
-        //let enemy: fc.Node = new fc.Node("Enemy");
-        //enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
-        //enemy = createEnemy();
-        enemy = new L11_Doom_Enemy.Enemy("Enemy", fc.Vector2.ONE(4), new fc.Vector3(8, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
+        enemy = new L11_Doom_Enemy.Enemy("George", fc.Vector2.ONE(4), new fc.Vector3(8, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
         root.appendChild(enemy);
+        enemy2 = new L11_Doom_Enemy.Enemy("Bill", fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
+        root.appendChild(enemy2);
         cmpCamera.projectCentral(1, 45, fc.FIELD_OF_VIEW.DIAGONAL, 0.2, 10000);
         cmpCamera.pivot.translate(fc.Vector3.Y(1.7));
         cmpCamera.backgroundColor = fc.Color.CSS("black");
@@ -53,11 +53,8 @@ var L11_Doom_Enemy;
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 120);
     }
     function hndLoop(_event) {
-        ctrSpeed.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.S, fc.KEYBOARD_CODE.ARROW_DOWN])
-            + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.W, fc.KEYBOARD_CODE.ARROW_UP]));
-        ctrDirection.setInput(fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
-            + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]));
-        enemy.moveEnemy(avatar.mtxLocal.translation);
+        hndEnemy();
+        enemy2.moveEnemy(avatar.mtxLocal.translation);
         moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
         ctrRotation.setInput(0);
         L11_Doom_Enemy.viewport.draw();
@@ -66,6 +63,10 @@ var L11_Doom_Enemy;
         ctrRotation.setInput(_event.movementX);
     }
     function moveAvatar(_translationZ, _translationX, _rotation) {
+        ctrSpeed.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.S, fc.KEYBOARD_CODE.ARROW_DOWN])
+            + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.W, fc.KEYBOARD_CODE.ARROW_UP]));
+        ctrDirection.setInput(fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
+            + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT]));
         let speedRotation = _rotation * 0.6;
         avatar.mtxLocal.rotateY(speedRotation);
         let posOld = avatar.mtxLocal.translation;
@@ -110,6 +111,20 @@ var L11_Doom_Enemy;
             walls.appendChild(new L11_Doom_Enemy.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, numWalls / 2), sizeWall), fc.Vector3.Y(180), mtrWall));
         }
         return walls;
+    }
+    function hndEnemy() {
+        /* let tempPos: fc.Vector3 = enemy.mtxLocal.translation;
+        let neartarget: Boolean = true;
+        enemy.rotateEnemy(avatar.mtxLocal.translation);
+    
+        for (let walls of root.getChildrenByName("Walls"))
+        for (let wall of walls.getChildren() as GameObject[]) {
+          if (enemy.isTargetbetween(avatar, wall)) {
+            neartarget = false;
+            break;
+          }
+        } */
+        enemy.moveEnemy(avatar.mtxLocal.translation);
     }
     /*   function createEnemy(): fc.Node {
         let enemy: fc.Node = new fc.Node("Enemy");

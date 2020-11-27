@@ -36,5 +36,39 @@ namespace L11_Doom_Enemy {
       normal.scale(1.001);
       return fc.Vector3.SUM(intersect, normal);
     }
+
+    /* public isTargetbetween(_target: Node, _betweenTarget: GameObject): boolean {
+
+      let posThis: fc.Vector3 = this.mtxWorld.translation;
+      let posTarget: fc.Vector3 = _target.mtxWorld.translation;
+      let posWith: fc.Vector3 = _betweenTarget.mtxWorld.translation;
+
+      if (this.vectorAmountAirline(fc.Vector3.DIFFERENCE(posWith, posThis)) > this.vectorAmountAirline(fc.Vector3.DIFFERENCE(posTarget, posThis)))
+        return false;
+
+      let localWich: fc.Vector3 = fc.Vector3.TRANSFORMATION(posWith, this.mtxWorldInverse, true);
+      if (localWich.z < 0)
+        return false;
+        
+      //let normal: fc.Vector3 = this.mtxWorld.getZ();
+      let normalBe: fc.Vector3 = _betweenTarget.mtxWorld.getZ();
+      let sizeBe: fc.Vector3 = _betweenTarget.getComponent(fc.ComponentMesh).pivot.scaling;
+
+      let ray: fc.Ray = new fc.Ray(this.mtxWorld.getZ(), posTarget);
+
+      let intersect: fc.Vector3 = ray.intersectPlane(posWith, normalBe);
+      let localIntersect: fc.Vector3 = fc.Vector3.TRANSFORMATION(intersect, _betweenTarget.mtxWorldInverse, true);
+
+      if (Math.abs(localIntersect.x) > 0.5 * sizeBe.x) {
+
+        return false;
+
+      }
+      return true;
+    }
+
+    public vectorAmountAirline(_vector: fc.Vector3): number {
+      return Math.sqrt(Math.pow(_vector.x, 2) + Math.pow(_vector.z, 2));
+    } */
   }
 }

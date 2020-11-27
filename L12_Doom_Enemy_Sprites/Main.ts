@@ -1,20 +1,20 @@
-namespace L11_Doom_Enemy {
+namespace L12_Doom_Enemy_Sprites {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
   window.addEventListener("load", hndLoad);
 
-  const sizeWall: number = 3;
-  const numWalls: number = 20;
+  export const sizeWall: number = 3;
+  export const numWalls: number = 20;
 
-  const sizeEnemies: number = 2;
+  //const sizeEnemies: number = 2;
 
   export let viewport: fc.Viewport;
+  export let avatar: fc.Node = new fc.Node("Avatar");
   let root: fc.Node = new fc.Node("Root");
-  let avatar: fc.Node = new fc.Node("Avatar");
   let walls: fc.Node;
-  let enemy: Enemy;
-  let enemy2: Enemy;
+
+  let enemies: fc.Node;
 
   let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
 
@@ -25,7 +25,7 @@ namespace L11_Doom_Enemy {
   let ctrRotation: fc.Control = new fc.Control("AvatarRotation", -0.1, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrRotation.setDelay(50);
 
-  function hndLoad(_event: Event): void {
+  async function hndLoad(_event: Event): Promise<void> {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
 
     let meshQuad: fc.MeshQuad = new fc.MeshQuad("Quad");
@@ -41,14 +41,9 @@ namespace L11_Doom_Enemy {
     walls = createWalls();
     root.appendChild(walls);
 
-    let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
-    let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
 
-    enemy = new Enemy("George", fc.Vector2.ONE(4), new fc.Vector3(8, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
-    root.appendChild(enemy);
-
-    enemy2 = new Enemy("Bill", fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, -20), new fc.Vector3(0, 0, 0), mtrEnemy);
-    root.appendChild(enemy2);
+    enemies = await createEnemies();
+    root.appendChild(enemies);
 
     cmpCamera.projectCentral(1, 45, fc.FIELD_OF_VIEW.DIAGONAL, 0.2, 10000);
     cmpCamera.pivot.translate(fc.Vector3.Y(1.7));
@@ -72,12 +67,13 @@ namespace L11_Doom_Enemy {
   }
 
   function hndLoop(_event: Event): void {
-  
-    hndEnemy();
-    enemy2.moveEnemy(avatar.mtxLocal.translation);
+   // hndEnemy();
 
     moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
     ctrRotation.setInput(0);
+
+    for (let enemy of enemies.getChildren() as Enemy[])
+      enemy.hndEnemy();
 
     viewport.draw();
   }
@@ -159,33 +155,24 @@ namespace L11_Doom_Enemy {
   }
 
 
-  function hndEnemy(): void {
-
-    /* let tempPos: fc.Vector3 = enemy.mtxLocal.translation;
-    let neartarget: Boolean = true;
-    enemy.rotateEnemy(avatar.mtxLocal.translation);
-
-    for (let walls of root.getChildrenByName("Walls"))
-    for (let wall of walls.getChildren() as GameObject[]) {
-      if (enemy.isTargetbetween(avatar, wall)) {
-        neartarget = false;
-        break;
-      }
-    } */
+  /* function hndEnemy(): void {
 
     enemy.moveEnemy(avatar.mtxLocal.translation);
-    
+
   }
+ */
+  async function createEnemies(): Promise<fc.Node> {
+    let enemies: fc.Node = new fc.Node("Enemies");
 
-  /*   function createEnemy(): fc.Node {
-      let enemy: fc.Node = new fc.Node("Enemy");
-  
-      let txtEnemy: fc.TextureImage = new fc.TextureImage("../DoomAssets/Annihilator.png");
-      let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
-  
-      enemy.appendChild(new Enemy(fc.Vector2.ONE(4), new fc.Vector3(5, sizeEnemies / 1.5, 0), new fc.Vector3(0, 0, 0), mtrEnemy));
-  
-      return enemy;
-    } */
-
+    let txtCacodemon: fc.TextureImage = new fc.TextureImage();
+    await txtCacodemon.load("../DoomAssets/Cacodemon.png");
+    let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtCacodemon);
+    Enemy.generateSprites(coatSprite);
+    enemies.appendChild(new Enemy("Cacodemon0", fc.Vector3.Z(3)));
+    enemies.appendChild(new Enemy("Cacodemon1", fc.Vector3.X(3)));
+    enemies.appendChild(new Enemy("Cacodemon2", fc.Vector3.X(-3)));
+    
+    console.log("Enemies", enemies);
+    return enemies;
+  }
 }

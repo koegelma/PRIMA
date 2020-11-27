@@ -1,6 +1,6 @@
 /// <reference path="../../core/build/fudgecore.d.ts" />
 /// <reference types="../../core/build/fudgecore" />
-import ƒ = FudgeCore;
+import fc = FudgeCore;
 import ƒAid = FudgeAid;
 declare namespace FudgeAid {
 }
@@ -143,7 +143,7 @@ declare namespace FudgeAid {
     /**
      * Handles the animation cycle of a sprite on a [[Node]]
      */
-    class NodeSprite extends ƒ.Node {
+    class NodeSprite extends fc.Node {
         private static mesh;
         framerate: number;
         private cmpMesh;
@@ -162,7 +162,7 @@ declare namespace FudgeAid {
         /**
          * Show the next frame of the sequence or start anew when the end or the start was reached, according to the direction of playing
          */
-        showFrameNext: (_event: ƒ.EventTimer) => void;
+        showFrameNext: (_event: fc.EventTimer) => void;
         /**
          * Sets the direction for animation playback, negativ numbers make it play backwards.
          */
@@ -205,9 +205,11 @@ declare namespace FudgeAid {
         generate(_rects: ƒ.Rectangle[], _resolutionQuad: number, _origin: ƒ.ORIGIN2D): void;
         /**
          * Add sprite frames using a grid on the spritesheet defined by a rectangle to start with, the number of frames,
-         * the size of the borders of the grid and more
+         * the resolution which determines the size of the sprites mesh based on the number of pixels of the texture frame,
+         * the offset from one cell of the grid to the next in the sequence and, in case the sequence spans over more than one row or column,
+         * the offset to move the start rectangle when the margin of the texture is reached and wrapping occurs.
          */
-        generateByGrid(_startRect: ƒ.Rectangle, _frames: number, _borderSize: ƒ.Vector2, _resolutionQuad: number, _origin: ƒ.ORIGIN2D): void;
+        generateByGrid(_startRect: ƒ.Rectangle, _frames: number, _resolutionQuad: number, _origin: ƒ.ORIGIN2D, _offsetNext: ƒ.Vector2, _offsetWrap?: ƒ.Vector2): void;
         private createFrame;
     }
 }
@@ -272,6 +274,6 @@ declare namespace FudgeAid {
 }
 declare namespace FudgeAid {
     class Viewport {
-        static expandCameraToInteractiveOrbit(_viewport: ƒ.Viewport, _showFocus?: boolean, _speedCameraRotation?: number, _speedCameraTranslation?: number, _speedCameraDistance?: number): CameraOrbit;
+        static expandCameraToInteractiveOrbit(_viewport: fc.Viewport, _showFocus?: boolean, _speedCameraRotation?: number, _speedCameraTranslation?: number, _speedCameraDistance?: number): CameraOrbit;
     }
 }

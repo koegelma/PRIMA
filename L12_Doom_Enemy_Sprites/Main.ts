@@ -67,14 +67,15 @@ namespace L12_Doom_Enemy_Sprites {
   }
 
   function hndLoop(_event: Event): void {
-   // hndEnemy();
+    // hndEnemy();
 
     moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
     ctrRotation.setInput(0);
 
-    for (let enemy of enemies.getChildren() as Enemy[])
+    for (let enemy of enemies.getChildren() as Enemy[]) {
       enemy.hndEnemy();
-
+      enemy.getZAngle(enemy.mtxLocal.translation, avatar.mtxLocal.translation);
+    }
     viewport.draw();
   }
 
@@ -171,7 +172,7 @@ namespace L12_Doom_Enemy_Sprites {
     enemies.appendChild(new Enemy("Cacodemon0", fc.Vector3.Z(3)));
     enemies.appendChild(new Enemy("Cacodemon1", fc.Vector3.X(3)));
     enemies.appendChild(new Enemy("Cacodemon2", fc.Vector3.X(-3)));
-    
+
     console.log("Enemies", enemies);
     return enemies;
   }

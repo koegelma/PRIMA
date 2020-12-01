@@ -50,8 +50,10 @@ var L12_Doom_Enemy_Sprites;
         // hndEnemy();
         moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
         ctrRotation.setInput(0);
-        for (let enemy of enemies.getChildren())
+        for (let enemy of enemies.getChildren()) {
             enemy.hndEnemy();
+            enemy.getZAngle(enemy.mtxLocal.translation, L12_Doom_Enemy_Sprites.avatar.mtxLocal.translation);
+        }
         L12_Doom_Enemy_Sprites.viewport.draw();
     }
     function hndMouse(_event) {

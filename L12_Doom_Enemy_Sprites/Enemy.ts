@@ -45,6 +45,26 @@ namespace L12_Doom_Enemy_Sprites {
       }
     }
 
+    public getZAngle(_angleEnemy: fc.Vector3, _angleAvatar: fc.Vector3): void {
+      // 1. Skalarprodukt
+
+      let u: fc.Vector3 = fc.Vector3.Z(_angleEnemy.z);
+      let v: fc.Vector3 = fc.Vector3.Z(_angleAvatar.z);
+
+      console.log("Z: " + _angleEnemy.z);
+
+      //let dotProduct: number = fc.Vector3.DOT(u, v);
+      //console.log("Dot Product: " + dotProduct);
+
+      // 2. Längen der Vektoren
+
+      // 3. einsetzen
+
+      //let amount: number = Math.sqrt(Math.(_vector.x, 2) + Math.pow(_vector.z, 2));
+
+      // 4. ausrechnen
+    }
+
     public hndEnemy(): void {
 
       if (this.mtxLocal.translation.equals(this.posTarget, 0.1))

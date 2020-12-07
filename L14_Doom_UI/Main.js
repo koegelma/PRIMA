@@ -51,6 +51,7 @@ var L14_Doom_UI;
     }
     function hndLoop(_event) {
         // hndEnemy();
+        L14_Doom_UI.Hud.displayPosition();
         moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
         ctrRotation.setInput(0);
         for (let enemy of enemies.getChildren()) {
@@ -69,7 +70,6 @@ var L14_Doom_UI;
         let speedRotation = _rotation * 0.6;
         L14_Doom_UI.avatar.mtxLocal.rotateY(speedRotation);
         let posOld = L14_Doom_UI.avatar.mtxLocal.translation;
-        //Hud.displayPosition(posOld);
         let speedZ = _translationZ * 0.3;
         L14_Doom_UI.avatar.mtxLocal.translateZ(speedZ);
         let speedX = _translationX * 0.2;

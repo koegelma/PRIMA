@@ -72,6 +72,7 @@ namespace L14_Doom_UI {
 
   function hndLoop(_event: Event): void {
     // hndEnemy();
+    Hud.displayPosition();
 
     moveAvatar(ctrSpeed.getOutput(), ctrDirection.getOutput(), ctrRotation.getOutput());
     ctrRotation.setInput(0);
@@ -100,7 +101,7 @@ namespace L14_Doom_UI {
     let speedRotation: number = _rotation * 0.6;
     avatar.mtxLocal.rotateY(speedRotation);
     let posOld: fc.Vector3 = avatar.mtxLocal.translation;
-    //Hud.displayPosition(posOld);
+    
 
     let speedZ: number = _translationZ * 0.3;
     avatar.mtxLocal.translateZ(speedZ);

@@ -1,4 +1,4 @@
-namespace L12_Doom_Enemy_Sprites {
+namespace L13_Doom_State_Machine {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
@@ -8,12 +8,18 @@ namespace L12_Doom_Enemy_Sprites {
     _000 = 0, _045 = 1, _090 = 2, _135 = 3, _180 = 4, _225 = 5, _270 = 6, _315 = 7
   }
 
+  export enum JOB {
+    IDLE, PATROL
+  }
+
   export class Enemy extends fc.Node {
     private static animations: fcaid.SpriteSheetAnimations;
-    public speed: number = 1;
+    public speed: number = 3;
     private show: fc.Node;
     private sprite: fcaid.NodeSprite;
     private posTarget: fc.Vector3;
+    private angleView: number = 0;
+    private job: JOB = JOB.PATROL;
 
     constructor(_name: string = "Enemy", _position: fc.Vector3) {
       super(_name);
@@ -24,14 +30,16 @@ namespace L12_Doom_Enemy_Sprites {
       this.appendChild(this.show);
 
       this.sprite = new fcaid.NodeSprite("Sprite");
+      this.sprite.addComponent(new fc.ComponentTransform());
       this.show.appendChild(this.sprite);
 
-      
+
       this.sprite.setAnimation(<fcaid.SpriteSheetAnimation>Enemy.animations["Idle_000"]);
       this.sprite.setFrameDirection(1);
       this.sprite.framerate = 2;
 
       this.posTarget = _position;
+      this.chooseTargetPosition();
 
     }
 
@@ -45,39 +53,24 @@ namespace L12_Doom_Enemy_Sprites {
       }
     }
 
-    public getZAngle(): number {
-      /*       // 1. Skalarprodukt
-      
-            let u: fc.Vector3 = fc.Vector3.Z(_angleEnemy.z);
-            let v: fc.Vector3 = fc.Vector3.Z(_angleAvatar.z);
-      
-            let dotProduct: number = fc.Vector3.DOT(u, v);
-            console.log("Dot Product: " + dotProduct);
-      
-            // 2. Längen der Vektoren
-      
-            // 3. einsetzen
-      
-            // 4. ausrechnen */
 
-      let locAvatar: fc.Vector3 = avatar.mtxWorld.translation;
-      let locEnemy: fc.Vector3 = this.mtxWorld.translation;
-
-      let difference: fc.Vector3 = fc.Vector3.DIFFERENCE(locEnemy, locAvatar);
-      let lengthBetween: number = Math.sqrt((difference.x * difference.x) + (difference.y * difference.y) + (difference.z * difference.z));
-      let normal: fc.Vector3 = new fc.Vector3(difference.x / lengthBetween, difference.y / lengthBetween, difference.z / lengthBetween);
-      let scalar: number = normal.x * this.mtxWorld.rotation.x + normal.y * this.mtxWorld.rotation.y + normal.z * this.mtxWorld.rotation.z;
-      let angle: number = Math.acos(scalar);
-      return angle;
-
-    }
 
     public hndEnemy(): void {
 
-      if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
-        this.chooseTargetPosition();
+      switch (this.job) {
+        case JOB.PATROL:
+          if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
+            // this.chooseTargetPosition();
+            this.job = JOB.IDLE;
+          this.moveEnemy();
+          break;
+        case JOB.IDLE:
+        default:
+          break;
+      }
 
-      this.moveEnemy();
+
+      this.displayAnimation();
     }
 
     public rotateEnemy(_avatarTranslation: fc.Vector3): void {
@@ -86,18 +79,42 @@ namespace L12_Doom_Enemy_Sprites {
 
     public moveEnemy(): void {
 
-      //this.rotateEnemy(_avatarTranslation);
       this.mtxLocal.showTo(this.posTarget);
       this.mtxLocal.translateZ(this.speed * fc.Loop.timeFrameGame / 1000);
+    }
+
+    private displayAnimation(): void {
       this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(avatar.mtxLocal.translation, this.mtxWorldInverse, true));
 
-      this.mtxLocal.translateZ(0.06);
+      let rotation: number = this.show.mtxLocal.rotation.y;
+      rotation = (rotation + 360 + 22.5) % 360;
+      rotation = Math.floor(rotation / 45);
+
+      if (this.angleView == rotation)
+        return;
+
+      this.angleView = rotation;
+
+      if (rotation > 4) {
+        rotation = 8 - rotation;
+        this.flip(true);
+      }
+      else
+        this.flip(false);
+
+      let section: string = ANGLE[rotation]; // .padStart(3, "0");
+      console.log(section);
+      this.sprite.setAnimation(<fcaid.SpriteSheetAnimation>Enemy.animations["Idle" + section]);
     }
 
     private chooseTargetPosition(): void {
       let range: number = 5; //sizeWall * numWalls / 2 - 2;
       this.posTarget = new fc.Vector3(fc.Random.default.getRange(-range, range), 0, fc.Random.default.getRange(-range, range));
       console.log("New target", this.posTarget.toString());
+    }
+
+    private flip(_reverse: boolean): void {
+      this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
     }
   }
 }

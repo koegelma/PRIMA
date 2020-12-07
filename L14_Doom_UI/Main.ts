@@ -1,9 +1,10 @@
-namespace L12_Doom_Enemy_Sprites {
+namespace L14_Doom_UI {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
   window.addEventListener("load", hndLoad);
 
+  const clrWhite: fc.Color = fc.Color.CSS("white");
   export const sizeWall: number = 3;
   export const numWalls: number = 20;
 
@@ -11,6 +12,9 @@ namespace L12_Doom_Enemy_Sprites {
 
   export let viewport: fc.Viewport;
   export let avatar: fc.Node = new fc.Node("Avatar");
+
+  //let health: number = 100;
+  //let ammo: number = 30;
   let root: fc.Node = new fc.Node("Root");
   let walls: fc.Node;
 
@@ -73,7 +77,7 @@ namespace L12_Doom_Enemy_Sprites {
     ctrRotation.setInput(0);
 
     for (let enemy of enemies.getChildren() as Enemy[]) {
-      enemy.hndEnemy();
+      enemy.update();
     }
     viewport.draw();
   }
@@ -96,12 +100,15 @@ namespace L12_Doom_Enemy_Sprites {
     let speedRotation: number = _rotation * 0.6;
     avatar.mtxLocal.rotateY(speedRotation);
     let posOld: fc.Vector3 = avatar.mtxLocal.translation;
+    //Hud.displayPosition(posOld);
 
     let speedZ: number = _translationZ * 0.3;
     avatar.mtxLocal.translateZ(speedZ);
 
     let speedX: number = _translationX * 0.2;
     avatar.mtxLocal.translateX(speedX);
+
+   
 
     let bouncedOff: Wall[] = bounceOffWalls(<Wall[]>walls.getChildren());
     if (bouncedOff.length < 2)
@@ -166,11 +173,10 @@ namespace L12_Doom_Enemy_Sprites {
 
     let txtCacodemon: fc.TextureImage = new fc.TextureImage();
     await txtCacodemon.load("../DoomAssets/Cacodemon.png");
-    let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtCacodemon);
+    let coatSprite: fc.CoatTextured = new fc.CoatTextured(clrWhite, txtCacodemon);
     Enemy.generateSprites(coatSprite);
-    enemies.appendChild(new Enemy("Cacodemon0", fc.Vector3.Z(3)));
-    enemies.appendChild(new Enemy("Cacodemon1", fc.Vector3.X(3)));
-    enemies.appendChild(new Enemy("Cacodemon2", fc.Vector3.X(-3)));
+    for (let i: number = 0; i < 10; i++)
+      enemies.appendChild(new Enemy("Cacodemon" + i, fc.Vector3.Z(3)));
 
     console.log("Enemies", enemies);
     return enemies;

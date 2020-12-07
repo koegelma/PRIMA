@@ -1,9 +1,10 @@
-namespace L12_Doom_Enemy_Sprites {
+namespace L13_Doom_State_Machine {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
   window.addEventListener("load", hndLoad);
 
+  const clrWhite: fc.Color = fc.Color.CSS("white");
   export const sizeWall: number = 3;
   export const numWalls: number = 20;
 
@@ -166,11 +167,10 @@ namespace L12_Doom_Enemy_Sprites {
 
     let txtCacodemon: fc.TextureImage = new fc.TextureImage();
     await txtCacodemon.load("../DoomAssets/Cacodemon.png");
-    let coatSprite: fc.CoatTextured = new fc.CoatTextured(null, txtCacodemon);
+    let coatSprite: fc.CoatTextured = new fc.CoatTextured(clrWhite, txtCacodemon);
     Enemy.generateSprites(coatSprite);
-    enemies.appendChild(new Enemy("Cacodemon0", fc.Vector3.Z(3)));
-    enemies.appendChild(new Enemy("Cacodemon1", fc.Vector3.X(3)));
-    enemies.appendChild(new Enemy("Cacodemon2", fc.Vector3.X(-3)));
+    for (let i: number = 0; i < 10; i++)
+      enemies.appendChild(new Enemy("Cacodemon" + i, fc.Vector3.Z(3)));
 
     console.log("Enemies", enemies);
     return enemies;

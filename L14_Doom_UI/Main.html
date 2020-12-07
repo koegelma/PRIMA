@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DOOM</title>
+  <script src="../FudgeCore/FudgeCore.js"></script>
+  <script src="../FudgeAid/FudgeAid.js"></script>
+  <script src="GameObject.js"></script>
+  <script src="Enemy.js"></script>
+  <script src="Wall.js"></script>
+  <script src="StateMachine.js"></script>
+  <script src="Hud.js"></script>
+  <script src="Main.js"></script>
+
+  <style>
+    html,
+    body {
+      padding: 0px;
+      margin: 0px;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .outerDIV {
+      position: absolute;
+      left: 50%;
+      bottom: 0%;
+      background-image: url(https://www.all3dfree.net/uploads/5/1/9/6/51967249/3d-textures-cg-textures-concrete_orig.webp);
+      transform: translateX(-50%) translateY(-50%);
+    }
+
+    .hudElement {
+      display: inline-table;
+      color: snow;
+      font-size: 350%;
+      font-family:fantasy;
+      text-shadow: 1.2px 1.2px black;
+      background-image: url(https://www.all3dfree.net/uploads/5/1/9/6/51967249/3d-textures-cg-textures-concrete_orig.webp);
+      border-style: ridge;
+      border-color: dimgray;
+      padding: 1% 1%;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas></canvas>
+  <div class="outerDIV">
+    <div class="hudElement" id="Ammo"></div>
+    <div class="hudElement" id="HP"></div>
+    <div class="hudElement" id="Armor"></div>
+  </div>
+</body>
+
+</html>

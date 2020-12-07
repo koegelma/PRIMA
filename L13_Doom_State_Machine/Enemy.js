@@ -1,6 +1,6 @@
 "use strict";
-var L12_Doom_Enemy_Sprites;
-(function (L12_Doom_Enemy_Sprites) {
+var L13_Doom_State_Machine;
+(function (L13_Doom_State_Machine) {
     var fc = FudgeCore;
     var fcaid = FudgeAid;
     let ANGLE;
@@ -14,21 +14,30 @@ var L12_Doom_Enemy_Sprites;
         ANGLE[ANGLE["_225"] = 5] = "_225";
         ANGLE[ANGLE["_270"] = 6] = "_270";
         ANGLE[ANGLE["_315"] = 7] = "_315";
-    })(ANGLE = L12_Doom_Enemy_Sprites.ANGLE || (L12_Doom_Enemy_Sprites.ANGLE = {}));
+    })(ANGLE = L13_Doom_State_Machine.ANGLE || (L13_Doom_State_Machine.ANGLE = {}));
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["IDLE"] = 0] = "IDLE";
+        JOB[JOB["PATROL"] = 1] = "PATROL";
+    })(JOB = L13_Doom_State_Machine.JOB || (L13_Doom_State_Machine.JOB = {}));
     class Enemy extends fc.Node {
         constructor(_name = "Enemy", _position) {
             super(_name);
-            this.speed = 1;
+            this.speed = 3;
+            this.angleView = 0;
+            this.job = JOB.PATROL;
             this.addComponent(new fc.ComponentTransform());
             this.mtxLocal.translation = _position;
             this.show = new fcaid.Node("Show", fc.Matrix4x4.IDENTITY());
             this.appendChild(this.show);
             this.sprite = new fcaid.NodeSprite("Sprite");
+            this.sprite.addComponent(new fc.ComponentTransform());
             this.show.appendChild(this.sprite);
             this.sprite.setAnimation(Enemy.animations["Idle_000"]);
             this.sprite.setFrameDirection(1);
             this.sprite.framerate = 2;
             this.posTarget = _position;
+            this.chooseTargetPosition();
         }
         static generateSprites(_spritesheet) {
             Enemy.animations = {};
@@ -39,50 +48,54 @@ var L12_Doom_Enemy_Sprites;
                 Enemy.animations[name] = sprite;
             }
         }
-        getZAngle() {
-            /*       // 1. Skalarprodukt
-            
-                  let u: fc.Vector3 = fc.Vector3.Z(_angleEnemy.z);
-                  let v: fc.Vector3 = fc.Vector3.Z(_angleAvatar.z);
-            
-                  let dotProduct: number = fc.Vector3.DOT(u, v);
-                  console.log("Dot Product: " + dotProduct);
-            
-                  // 2. Längen der Vektoren
-            
-                  // 3. einsetzen
-            
-                  // 4. ausrechnen */
-            let locAvatar = L12_Doom_Enemy_Sprites.avatar.mtxWorld.translation;
-            let locEnemy = this.mtxWorld.translation;
-            let difference = fc.Vector3.DIFFERENCE(locEnemy, locAvatar);
-            let lengthBetween = Math.sqrt((difference.x * difference.x) + (difference.y * difference.y) + (difference.z * difference.z));
-            let normal = new fc.Vector3(difference.x / lengthBetween, difference.y / lengthBetween, difference.z / lengthBetween);
-            let scalar = normal.x * this.mtxWorld.rotation.x + normal.y * this.mtxWorld.rotation.y + normal.z * this.mtxWorld.rotation.z;
-            let angle = Math.acos(scalar);
-            return angle;
-        }
         hndEnemy() {
-            if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
-                this.chooseTargetPosition();
-            this.moveEnemy();
+            switch (this.job) {
+                case JOB.PATROL:
+                    if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
+                        // this.chooseTargetPosition();
+                        this.job = JOB.IDLE;
+                    this.moveEnemy();
+                    break;
+                case JOB.IDLE:
+                default:
+                    break;
+            }
+            this.displayAnimation();
         }
         rotateEnemy(_avatarTranslation) {
             this.cmpTransform.showTo(_avatarTranslation);
         }
         moveEnemy() {
-            //this.rotateEnemy(_avatarTranslation);
             this.mtxLocal.showTo(this.posTarget);
             this.mtxLocal.translateZ(this.speed * fc.Loop.timeFrameGame / 1000);
-            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L12_Doom_Enemy_Sprites.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
-            this.mtxLocal.translateZ(0.06);
+        }
+        displayAnimation() {
+            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L13_Doom_State_Machine.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
+            let rotation = this.show.mtxLocal.rotation.y;
+            rotation = (rotation + 360 + 22.5) % 360;
+            rotation = Math.floor(rotation / 45);
+            if (this.angleView == rotation)
+                return;
+            this.angleView = rotation;
+            if (rotation > 4) {
+                rotation = 8 - rotation;
+                this.flip(true);
+            }
+            else
+                this.flip(false);
+            let section = ANGLE[rotation]; // .padStart(3, "0");
+            console.log(section);
+            this.sprite.setAnimation(Enemy.animations["Idle" + section]);
         }
         chooseTargetPosition() {
             let range = 5; //sizeWall * numWalls / 2 - 2;
             this.posTarget = new fc.Vector3(fc.Random.default.getRange(-range, range), 0, fc.Random.default.getRange(-range, range));
             console.log("New target", this.posTarget.toString());
         }
+        flip(_reverse) {
+            this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
+        }
     }
-    L12_Doom_Enemy_Sprites.Enemy = Enemy;
-})(L12_Doom_Enemy_Sprites || (L12_Doom_Enemy_Sprites = {}));
+    L13_Doom_State_Machine.Enemy = Enemy;
+})(L13_Doom_State_Machine || (L13_Doom_State_Machine = {}));
 //# sourceMappingURL=Enemy.js.map
